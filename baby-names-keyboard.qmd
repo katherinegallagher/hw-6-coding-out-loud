@@ -1,0 +1,125 @@
+---
+title: "Visualizing the Most Popular Female Baby Names From 2003"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: install-devtools-keyboard
+devtools::install_github("sharlagelfand/ggkeyboard", ref = "main")
+```
+
+```{r}
+#| label: load-packages
+#| message: false
+library(tidyverse)
+library(ggkeyboard) # https://github.com/sharlagelfand/ggkeyboard
+```
+
+#Task 1: Take the first letter from each baby name 
+
+```{r}
+#| label: load-data
+names <- read_csv("https://raw.githubusercontent.com/hadley/data-baby-names/master/baby-names.csv")
+
+```
+
+```{r}
+#| label: subset-2003-girls
+female_03 <- names |>
+  subset(year == "2003" & sex == "girl") |>
+  mutate(first_letter = str_sub(name, start = 1, end = 1)) 
+
+female_03_counts <- female_03 |>
+    count(first_letter, sort = TRUE)
+```
+
+#Task 2: Draw a keyboard 
+
+```{r}
+#| label: keyboard-display
+ggkeyboard(tkl, layout = "iso")
+```
+
+## Task 3: Color keyboard keys based on frequency of first letter
+
+dark blue - "#2D669B"
+light blue - "#359CA8"
+green - "#B8C222"
+yellow - "#EEDD49"
+orange - "#F2BC4A"
+dark orange - "#FB704A"
+red - "#BE372C"
+
+### Color scale
+
+Need exploratory analysis to determine a scale based on the distribution of `n`.
+
+```{r}
+#| label: summary-stats
+female_03_counts |>
+  summarise(
+    min = min(n),
+    mean = mean(n),
+    sd = sd(n),
+    max = max(n),
+    q20 = quantile(n, 0.20),
+    q40 = quantile(n, 0.40),
+    q60 = quantile(n, 0.60),
+    q80 = quantile(n, 0.80)
+  )
+```
+
+- dark blue   - "#2D669B" - 0
+- light blue  - "#359CA8" - 5
+- green       - "#B8C222" - 10
+- yellow      - "#EEDD49" - 20
+- orange      - "#F2BC4A" - 30
+- dark orange - "#FB704A" - 60
+- red         - "#BE372C" - > 100
+
+Assigning colors to letters 
+
+```{r}
+#| label: assigning-cutoffs
+female_03_counts <- female_03_counts |>
+  mutate(
+    color = case_when(
+      n == 0                  ~ "#2D669B",
+      n <=  5                 ~ "#359CA8",
+      n > 5  & n <= 10      ~ "#B8C222",
+      n > 10 & n <= 20      ~ "#EEDD49",
+      n > 20 & n <= 30      ~ "#F2BC4A",
+      n > 30 & n <= 60     ~ "#FB704A",
+      n > 60  ~ "#BE372C"
+      ),
+    first_letter = str_to_upper(first_letter)
+  ) |>
+  arrange(first_letter)
+view(female_03_counts)
+```
+
+```{r}
+#| label: order-letters-by-keyboard
+keys <- read_csv("https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv")
+
+female_03_counts_ordered <- keys |> 
+  filter(key_label %in% LETTERS) |>
+  select(key) |>
+  left_join(female_03_counts, by = c("key" = "first_letter"))
+```
+
+```{r}
+
+cus
+ggkeyboard(sixty_percent, palette = keyboard_palette("magic")) |>
+  highlight_keys(
+    keys = female_03_counts_ordered$key, 
+    fill = female_03_counts_ordered$color, 
+    alpha = 0.7, 
+    colour = NA
+    )
+```
+
