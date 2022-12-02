@@ -24,7 +24,6 @@ library(scales)
 ```{r}
 #| label: load-data
 names <- read_csv("https://raw.githubusercontent.com/hadley/data-baby-names/master/baby-names.csv")
-
 ```
 
 ```{r}
@@ -47,13 +46,15 @@ ggkeyboard(tkl, layout = "iso")
 
 ## Task 3: Color keyboard keys based on frequency of first letter
 
-dark blue - "#2D669B"
-light blue - "#359CA8"
-green - "#B8C222"
+dark blue - "#1d4877"
+green blue - "#1C5E6D"
+green - "#1b8a5a"
 yellow - "#EEDD49"
-orange - "#F2BC4A"
-dark orange - "#FB704A"
-red - "#BE372C"
+yellow green - "#B0A334"
+yellow - "#fbb021"
+orange - "#f68838"
+red - "#ee3e32"
+dark red - "#FF0000"
 
 ### Color scale
 
@@ -74,17 +75,8 @@ female_03_counts |>
   )
 ```
 
-- dark blue   - "#2D669B" - 0
-- light blue  - "#359CA8" - 5
-- green       - "#B8C222" - 10
-- yellow      - "#EEDD49" - 20
-- orange      - "#F2BC4A" - 30
-- dark orange - "#FB704A" - 60
-- red         - "#BE372C" - > 100
-
-Assigning colors to letters 
-
 ```{r}
+#| label: assigning-color-to-freq
 female_03_counts <- female_03_counts |>
   mutate(
     color = case_when(
@@ -105,6 +97,7 @@ view(female_03_counts)
 ```
 
 ```{r}
+#| label: arranging-letters-by-keyboard-order
 keys <- read_csv("https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv")
 female_03_counts_ordered <- keys |>
   filter(key_label %in% LETTERS) |>
@@ -113,18 +106,9 @@ female_03_counts_ordered <- keys |>
 view(female_03_counts_ordered)
 ```
 
-```{r}
-female_03_legend <- female_03_counts |>
-  mutate(
-    order = case_when(n <= 150 ~ 0),
-    rank = dense_rank(desc(n))
-  ) 
-view(female_03_legend)
-
-```
-
 
 ```{r}
+#| label: creating-custom-palette
 keyboard_palette <- function(palette = c("heatmap")) {
   palette <- match.arg(palette)
     heatmap = c(
@@ -142,7 +126,7 @@ keyboard_palette <- function(palette = c("heatmap")) {
 ```
 
 ```{r}
-
+#| label: making-heat-map
 keyboard <- ggkeyboard(sixty_percent, palette = keyboard_palette("heatmap")) |>
   highlight_keys(
     keys = female_03_counts_ordered$key, 
@@ -164,6 +148,16 @@ keyboard
 ```
 
 ```{r}
+#| label: making-legend-data-set
+female_03_legend <- female_03_counts |>
+  mutate(
+    order = case_when(n <= 150 ~ 0),
+    rank = dense_rank(desc(n))
+  ) 
+```
+
+```{r}
+#| label: visualization-legend
 ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
   geom_tile() +
   scale_fill_identity() +
