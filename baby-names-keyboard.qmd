@@ -154,21 +154,26 @@ female_03_legend <- female_03_counts |>
     order = case_when(n <= 150 ~ 0),
     rank = dense_rank(desc(n))
   ) 
+
 ```
 
 ```{r}
 #| label: visualization-legend
+
+
 ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
   geom_tile() +
   scale_fill_identity() +
   labs(
-    x = "Most Frequent                                         Least Frequent",
+    x = "More Frequent                                         Less Frequent",
     y = "",
   ) + 
    theme(axis.text.x=element_blank(), #remove x axis labels
         axis.ticks.x=element_blank(), #remove x axis ticks
         axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank()  #remove y axis ticks
+        axis.ticks.y=element_blank(), #remove y axis ticks
+        plot.margin = margin(1, 1, 2, 2, "cm"),
+        aspect.ratio = 3/15
         )
 ```
 
