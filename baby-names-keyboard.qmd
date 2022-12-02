@@ -125,13 +125,6 @@ view(female_03_legend)
 
 
 ```{r}
-ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
-  geom_tile("") +
-  scale_fill_identity()
-```
-
-
-```{r}
 keyboard_palette <- function(palette = c("heatmap")) {
   palette <- match.arg(palette)
     heatmap = c(
@@ -159,10 +152,7 @@ keyboard <- ggkeyboard(sixty_percent, palette = keyboard_palette("heatmap")) |>
     ) +
   labs(
     title = "Heat Map of Keyboard", 
-    subtitle = "Most Common Female Baby Names in 2003 by First Letter",
-    caption = "Dark Red: >60 | Light Red: 30-60 
-              Dark Yellow: 10-20 | Light Yellow: 5-10 
-              Dark Blue: 1-5 | Light Blue: 0"
+    subtitle = "Most Common Female Baby Names in 2003 by First Letter"
   ) + 
   theme(
     text = element_text(
@@ -174,6 +164,17 @@ keyboard
 ```
 
 ```{r}
-
+ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
+  geom_tile() +
+  scale_fill_identity() +
+  labs(
+    x = "Most Frequent                                         Least Frequent",
+    y = "",
+  ) + 
+   theme(axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank()  #remove y axis ticks
+        )
 ```
 
