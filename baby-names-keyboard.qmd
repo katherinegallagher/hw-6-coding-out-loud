@@ -16,6 +16,7 @@ devtools::install_github("sharlagelfand/ggkeyboard", ref = "main")
 #| message: false
 library(tidyverse)
 library(ggkeyboard) # https://github.com/sharlagelfand/ggkeyboard
+library(scales)
 ```
 
 #Task 1: Take the first letter from each baby name 
@@ -87,20 +88,20 @@ Assigning colors to letters
 female_03_counts <- female_03_counts |>
   mutate(
     color = case_when(
-      n == 1                 ~ "#267DB6",
-      n <=  3                ~ "#359CA8",
-      n > 3  & n <= 10      ~ "#B8C222",
-      n > 10 & n <= 20      ~ "#FFF000",
-      n > 20 & n <= 30      ~ "#FDC70C",
-      n > 30 & n <= 60     ~ "#ED683C",
-      n > 60 & n <=140     ~ "#E93E3A",
-      n > 140               ~ "#FF0000"
+      n == 0                 ~ "#1d4877", #dark blue
+      n <=  3                ~ "#1C5E6D", #green blue
+      n > 3  & n <= 10      ~ "#1b8a5a", #green
+      n > 10 & n <= 20      ~ "#B0A334", #yellow green
+      n > 20 & n <= 30      ~ "#fbb021", #yellow
+      n > 30 & n <= 60     ~ "#f68838", #orange
+      n > 60 & n <=95     ~ "#ee3e32", #light red
+      n > 95               ~ "#FF0000" #DARK red
       ),
     first_letter = str_to_upper(first_letter)
   ) |>
   arrange(first_letter)
-
 view(female_03_counts)
+
 ```
 
 ```{r}
@@ -109,10 +110,26 @@ female_03_counts_ordered <- keys |>
   filter(key_label %in% LETTERS) |>
   select(key) |>
   left_join(female_03_counts, by = c("key" = "first_letter"))
-
-view(keys)
 view(female_03_counts_ordered)
 ```
+
+```{r}
+female_03_legend <- female_03_counts |>
+  mutate(
+    order = case_when(n <= 150 ~ 0),
+    rank = dense_rank(desc(n))
+  ) 
+view(female_03_legend)
+
+```
+
+
+```{r}
+ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
+  geom_tile("") +
+  scale_fill_identity()
+```
+
 
 ```{r}
 keyboard_palette <- function(palette = c("heatmap")) {
@@ -151,9 +168,12 @@ keyboard <- ggkeyboard(sixty_percent, palette = keyboard_palette("heatmap")) |>
     text = element_text(
       size = 13,  
       family = "serif")
-    ) 
+    )
 
 keyboard
+```
+
+```{r}
 
 ```
 
