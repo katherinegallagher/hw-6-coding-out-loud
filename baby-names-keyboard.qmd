@@ -173,7 +173,7 @@ ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
         axis.text.y=element_blank(),  #remove y axis labels
         axis.ticks.y=element_blank(), #remove y axis ticks
         plot.margin = margin(1, 1, 2, 2, "cm"),
-        aspect.ratio = 3/15
+        aspect.ratio = 2/20
         )
 ```
 
