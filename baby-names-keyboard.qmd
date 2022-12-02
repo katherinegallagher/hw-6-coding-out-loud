@@ -34,6 +34,7 @@ female_03 <- names |>
 
 female_03_counts <- female_03 |>
     count(first_letter, sort = TRUE)
+view(female_03_counts)
 ```
 
 #Task 2: Draw a keyboard 
@@ -83,43 +84,76 @@ female_03_counts |>
 Assigning colors to letters 
 
 ```{r}
-#| label: assigning-cutoffs
 female_03_counts <- female_03_counts |>
   mutate(
     color = case_when(
-      n == 0                  ~ "#2D669B",
-      n <=  5                 ~ "#359CA8",
-      n > 5  & n <= 10      ~ "#B8C222",
-      n > 10 & n <= 20      ~ "#EEDD49",
-      n > 20 & n <= 30      ~ "#F2BC4A",
-      n > 30 & n <= 60     ~ "#FB704A",
-      n > 60  ~ "#BE372C"
+      n == 1                 ~ "#267DB6",
+      n <=  3                ~ "#359CA8",
+      n > 3  & n <= 10      ~ "#B8C222",
+      n > 10 & n <= 20      ~ "#FFF000",
+      n > 20 & n <= 30      ~ "#FDC70C",
+      n > 30 & n <= 60     ~ "#ED683C",
+      n > 60 & n <=140     ~ "#E93E3A",
+      n > 140               ~ "#FF0000"
       ),
     first_letter = str_to_upper(first_letter)
   ) |>
   arrange(first_letter)
+
 view(female_03_counts)
 ```
 
 ```{r}
-#| label: order-letters-by-keyboard
 keys <- read_csv("https://raw.githubusercontent.com/sharlagelfand/ggkeyboard/061f0d9084d76d576200e81439311983e1d50d93/data-raw/sixty_percent.csv")
-
-female_03_counts_ordered <- keys |> 
+female_03_counts_ordered <- keys |>
   filter(key_label %in% LETTERS) |>
   select(key) |>
   left_join(female_03_counts, by = c("key" = "first_letter"))
+
+view(keys)
+view(female_03_counts_ordered)
+```
+
+```{r}
+keyboard_palette <- function(palette = c("heatmap")) {
+  palette <- match.arg(palette)
+    heatmap = c(
+      background = "#FFFFFF",
+      keyboard = "#3468E0",
+      alphanumeric = "#3468E0",
+      accent = "#3468E0",
+      modifier = "#3468E0",
+      numpad = "#3468E0",
+      arrow = "#3468E0",
+      light = "#FFFFFF",
+      text = "#FFFFDC"
+    )
+}
 ```
 
 ```{r}
 
-cus
-ggkeyboard(sixty_percent, palette = keyboard_palette("magic")) |>
+keyboard <- ggkeyboard(sixty_percent, palette = keyboard_palette("heatmap")) |>
   highlight_keys(
     keys = female_03_counts_ordered$key, 
     fill = female_03_counts_ordered$color, 
     alpha = 0.7, 
     colour = NA
-    )
+    ) +
+  labs(
+    title = "Heat Map of Keyboard", 
+    subtitle = "Most Common Female Baby Names in 2003 by First Letter",
+    caption = "Dark Red: >60 | Light Red: 30-60 
+              Dark Yellow: 10-20 | Light Yellow: 5-10 
+              Dark Blue: 1-5 | Light Blue: 0"
+  ) + 
+  theme(
+    text = element_text(
+      size = 13,  
+      family = "serif")
+    ) 
+
+keyboard
+
 ```
 
