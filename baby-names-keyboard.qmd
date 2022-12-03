@@ -160,6 +160,7 @@ female_03_legend <- female_03_counts |>
 ```{r}
 #| label: visualization-legend
 
+
 ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
   geom_tile() +
   scale_fill_identity() +
@@ -172,7 +173,7 @@ ggplot(female_03_legend, aes(x = rank, y = order, fill = color)) +
         axis.text.y=element_blank(),  #remove y axis labels
         axis.ticks.y=element_blank(), #remove y axis ticks
         plot.margin = margin(1, 1, 2, 2, "cm"),
-        aspect.ratio = 2/20
+        aspect.ratio = 3/20
         )
 ```
 
